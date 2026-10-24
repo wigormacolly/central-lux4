@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { exigirUsuario } from '@/lib/auth';
-import { STATUS_DEMANDA, carregar, dataISO, edicaoAtual, fmt, hoje, nomeDe, type Dados, type Demanda, type Edicao } from '@/lib/central';
+import { STATUS_DEMANDA, carregar, dataISO, edicaoAtual, fmt, hoje, pessoaDe, type Dados, type Demanda, type Edicao } from '@/lib/central';
 import { apagarDemanda, criarDemanda, editarDemanda, statusDemanda } from '../acoes';
 import { Apagar, Enviar, SelectAuto } from '@/components/Auto';
+import Avatar from '@/components/Avatar';
 
 export default async function Demandas({ searchParams }: { searchParams: Promise<{ p?: string }> }) {
   const u = await exigirUsuario();
@@ -10,7 +11,7 @@ export default async function Demandas({ searchParams }: { searchParams: Promise
   const ed = await edicaoAtual();
   const d = await carregar(ed);
   const lista = d.demandas.filter(t => p === 'todos' || (p === 'ninguem' ? !t.responsavel_id : t.responsavel_id === p));
-  const filtros = [{ id: 'todos', nome: 'Todos' }, ...d.gente.map(g => ({ id: g.id, nome: g.id === u.id ? `${g.nome} (eu)` : g.nome })), { id: 'ninguem', nome: 'Sem responsável' }];
+  const filtros: { id: string; nome: string; av?: Dados['gente'][number] }[] = [{ id: 'todos', nome: 'Todos' }, ...d.gente.map(g => ({ id: g.id, nome: g.nome.split(' ')[0], av: g })), { id: 'ninguem', nome: 'Sem responsável' }];
 
   return (
     <main className="stack">
@@ -18,7 +19,7 @@ export default async function Demandas({ searchParams }: { searchParams: Promise
 
       <div className="card">
         <div className="head"><h2>Nova demanda</h2>
-          <div className="seg">{filtros.map(f => <Link key={f.id} href={f.id === 'todos' ? '/demandas' : `/demandas?p=${f.id}`} aria-pressed={p === f.id}>{f.nome}</Link>)}</div>
+          <div className="seg">{filtros.map(f => <Link key={f.id} href={f.id === 'todos' ? '/demandas' : `/demandas?p=${f.id}`} aria-pressed={p === f.id} className="comav">{f.av && <Avatar p={f.av} tam={18} />}{f.nome}</Link>)}</div>
         </div>
         <CamposDemanda ed={ed} d={d} acao={criarDemanda} padraoResp={u.id} rotulo="Criar demanda" />
       </div>
@@ -47,7 +48,7 @@ function Cartao({ t, ed, d }: { t: Demanda; ed: Edicao; d: Dados }) {
       <div className="t">{t.titulo}</div>
       {t.detalhes && <details className="td"><summary>detalhes</summary><p>{t.detalhes}</p></details>}
       <div className="m">
-        <span>{nomeDe(d.gente, t.responsavel_id) ?? 'sem responsável'}</span>
+        <Avatar p={pessoaDe(d.gente, t.responsavel_id)} tam={26} />
         <span>{t.prazo !== null ? fmt(ed, t.prazo) : 'sem prazo'}</span>
         {atrasada && <span className="pill bad">atrasada</span>}
         {fase && <span className="pill">{fase.nome}</span>}

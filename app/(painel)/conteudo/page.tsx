@@ -1,7 +1,8 @@
 import { exigirUsuario } from '@/lib/auth';
-import { CANAIS, OBJETIVOS, STATUS_PECA, captacao, carregar, dataISO, edicaoAtual, fmtL, hoje, nomeDe, type Dados, type Edicao, type Meta } from '@/lib/central';
+import { CANAIS, OBJETIVOS, STATUS_PECA, captacao, carregar, dataISO, edicaoAtual, fmtL, hoje, pessoaDe, type Dados, type Edicao, type Meta } from '@/lib/central';
 import { apagarMeta, apagarPeca, apagarPilar, criarMeta, criarPeca, criarPilar, statusPeca } from '../acoes';
 import { Apagar, Enviar, SelectAuto } from '@/components/Auto';
+import Avatar from '@/components/Avatar';
 
 export default async function Conteudo() {
   await exigirUsuario();
@@ -70,7 +71,7 @@ export default async function Conteudo() {
                     <td>{c.canal}</td>
                     <td style={{ whiteSpace: 'nowrap' }}>{pi ? <><span className="sw" style={{ background: pi.cor }} /> {pi.nome}</> : <span className="muted">—</span>}</td>
                     <td style={{ minWidth: 220 }}>{c.titulo}</td>
-                    <td>{nomeDe(d.gente, c.responsavel_id) ?? <span className="muted">—</span>}</td>
+                    <td><Avatar p={pessoaDe(d.gente, c.responsavel_id)} /></td>
                     <td><form key={c.status} action={statusPeca.bind(null, c.id)}><SelectAuto name="status" value={c.status} opcoes={STATUS_PECA} label="Status" /></form></td>
                     <td><form action={apagarPeca.bind(null, c.id)}><Apagar pergunta="Apagar esta peça?" /></form></td>
                   </tr>

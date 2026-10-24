@@ -17,7 +17,7 @@ export const TIPOS: Record<string, { c: string; i: string }> = {
 };
 
 /* ---------- tipos ---------- */
-export type Pessoa = { id: string; nome: string };
+export type Pessoa = { id: string; nome: string; foto_em: string | null };
 export type Fase = { id: string; nome: string; inicio: number; dias: number; cor: string };
 export type Marco = { id: string; tipo: keyof typeof TIPOS_MARCO; titulo: string; dia: number; hora: string | null };
 export type Pilar = { id: string; nome: string; objetivo: string; cor: string };
@@ -57,7 +57,7 @@ export async function edicaoAtual(): Promise<Edicao> {
 }
 
 export async function pessoas(): Promise<Pessoa[]> {
-  return db()<Pessoa[]>`select id, nome from usuario where ativo order by criado_em`;
+  return db()<Pessoa[]>`select id, nome, foto_em from usuario where ativo order by criado_em`;
 }
 
 export async function carregar(ed: Edicao) {
@@ -110,4 +110,5 @@ export function itens(d: Dados): Item[] {
   return it.sort((a, b) => a.dia - b.dia || a.hora.localeCompare(b.hora, 'pt-BR', { numeric: true }));
 }
 
+export const pessoaDe = (gente: Pessoa[], id: string | null) => gente.find(p => p.id === id) ?? null;
 export const nomeDe = (gente: Pessoa[], id: string | null) => gente.find(p => p.id === id)?.nome ?? null;

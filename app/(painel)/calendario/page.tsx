@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { exigirUsuario } from '@/lib/auth';
-import { CANAIS, D, TIPOS, captacao, carregar, data, dataISO, edicaoAtual, faseNo, fmt, fmtL, hoje, itens, nomeDe } from '@/lib/central';
+import { CANAIS, D, TIPOS, captacao, carregar, data, dataISO, edicaoAtual, faseNo, fmt, fmtL, hoje, itens, pessoaDe } from '@/lib/central';
+import Avatar from '@/components/Avatar';
 import { apagarFase, apagarMarco, apagarPeca, criarFase, criarMarco, criarPeca, mudarDataEvento, salvarFase } from '../acoes';
 import { Apagar, Enviar } from '@/components/Auto';
 import Gantt from '@/components/Gantt';
@@ -96,7 +97,7 @@ export default async function Calendario({ searchParams }: { searchParams: SP })
                 <span className="dt">{x.titulo}</span>
                 {x.regua && <span className="lbl">régua da live</span>}
                 {x.status && <span className="pill">{x.status}</span>}
-                {nomeDe(d.gente, x.resp) && <span className="muted small">{nomeDe(d.gente, x.resp)}</span>}
+                {x.resp && <Avatar p={pessoaDe(d.gente, x.resp)} />}
                 {x.id && <form action={(x.origem === 'peca' ? apagarPeca : apagarMarco).bind(null, x.id)}><Apagar /></form>}
               </div>
             ))}</div>
